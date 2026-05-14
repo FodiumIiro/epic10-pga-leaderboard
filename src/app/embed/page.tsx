@@ -31,7 +31,7 @@ async function getInitial(): Promise<ApiResponse> {
   };
 }
 
-export default async function HomePage() {
+export default async function EmbedPage() {
   const initial = await getInitial();
   return <Leaderboard initial={initial} />;
 }

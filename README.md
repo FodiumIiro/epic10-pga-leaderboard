@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Epic10 — PGA Championship 2026 Leaderboard
 
-## Getting Started
+Embeddable live leaderboard for a Finnish prediction game on the 2026 PGA Championship.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Next.js 16 (App Router, Node runtime)
+- TypeScript, Tailwind CSS 4
+- Vercel KV (cut-snapshot persistence)
+- DataGolf `/preds/in-play` for live tournament data
+
+## Scoring
+
+Each of 134 teams ranks the same 10 elite golfers 1–10. We award **1 point per pick whose position matches that player's rank inside the 10-player group**. Ties inside the group share their position range — picking either tied player at either tied rank scores. Players who miss the cut keep their R1+R2 score (snapshotted in KV after round 2 starts).
+
+Team-level tiebreaker: `|leader's current score − team's predicted winner score|` ascending, then earliest submission.
+
+## Environment variables
+
+Copy `.env.local.example` to `.env.local`:
+
+```
+DATAGOLF_API_KEY=...
+KV_REST_API_URL=...
+KV_REST_API_TOKEN=...
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+KV vars are auto-populated when you link a Vercel KV store via the Vercel dashboard.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Dev
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+npm run dev
+# open http://localhost:3000/embed
+```
 
-## Learn More
+## Sanity-check the scoring engine
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx tsx scripts/check-scoring.ts
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. `gh repo create IiroFodium/epic10-pga-leaderboard --public --source=. --push`
+2. Import on Vercel under the IiroFodium account
+3. Set env vars in Vercel: `DATAGOLF_API_KEY` + provision a KV store
+4. The embed URL is `https://<deployment>.vercel.app/embed`
 
-## Deploy on Vercel
+## Embed snippet
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```html
+<iframe
+  src="https://epic10-pga-leaderboard.vercel.app/embed"
+  style="width:100%;max-width:640px;height:90vh;border:0"
+  loading="lazy"
+></iframe>
+```
