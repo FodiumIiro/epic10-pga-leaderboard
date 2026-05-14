@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { Leaderboard } from "@/components/Leaderboard";
+import { EmbedInstructions } from "@/components/EmbedInstructions";
 import { ApiResponse } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -33,5 +34,10 @@ async function getInitial(): Promise<ApiResponse> {
 
 export default async function HomePage() {
   const initial = await getInitial();
-  return <Leaderboard initial={initial} />;
+  return (
+    <>
+      <EmbedInstructions />
+      <Leaderboard initial={initial} />
+    </>
+  );
 }
