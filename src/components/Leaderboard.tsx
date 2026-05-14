@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ApiResponse } from "@/lib/types";
 import { Header } from "./Header";
 import { TeamRow } from "./TeamRow";
@@ -14,10 +14,21 @@ const POLL_INTERVAL_MS = 60_000;
 const POLL_JITTER_MS = 5_000;
 const STALE_THRESHOLD_MS = 5 * 60_000;
 
+function foldName(s: string): string {
+  return s.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
+}
+
 export function Leaderboard({ initial }: Props) {
   const [data, setData] = useState<ApiResponse>(initial);
   const [now, setNow] = useState<number>(() => Date.now());
   const [openTeamId, setOpenTeamId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+
+  const filteredTeams = useMemo(() => {
+    const q = foldName(query.trim());
+    if (!q) return data.teams;
+    return data.teams.filter((t) => foldName(t.name).includes(q));
+  }, [data.teams, query]);
 
   const inFlight = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -72,6 +83,18 @@ export function Leaderboard({ initial }: Props) {
     <div className="mx-auto w-full max-w-[640px] min-h-screen bg-[#0A0F1E] text-zinc-100">
       <Header meta={data.meta} showStale={showStale} />
 
+      <div className="sticky top-[60px] z-10 bg-[#0A0F1E]/95 backdrop-blur px-4 py-2 border-b border-white/5">
+        <input
+          type="search"
+          inputMode="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Hae joukkuetta…"
+          aria-label="Hae joukkuetta"
+          className="w-full h-8 px-2.5 bg-white/5 border border-white/10 rounded text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-lime-300/40 focus:bg-white/10"
+        />
+      </div>
+
       {data.meta.error && (
         <div className="px-4 py-2 text-[11px] text-amber-400 border-b border-amber-400/20 bg-amber-400/5">
           Tietolähde ei ole tavoitettavissa. Näytetään viimeisin tila.
@@ -89,7 +112,7 @@ export function Leaderboard({ initial }: Props) {
       )}
 
       <div className="divide-white/5">
-        {data.teams.map((team) => (
+        {filteredTeams.map((team) => (
           <TeamRow
             key={team.id}
             team={team}
@@ -103,6 +126,11 @@ export function Leaderboard({ initial }: Props) {
             )}
           />
         ))}
+        {query.trim() !== "" && filteredTeams.length === 0 && (
+          <p className="px-4 py-6 text-center text-xs text-zinc-500">
+            Ei osumia.
+          </p>
+        )}
       </div>
 
       <footer className="px-4 py-6 text-center text-[10px] text-zinc-600">

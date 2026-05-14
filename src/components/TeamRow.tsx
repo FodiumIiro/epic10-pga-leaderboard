@@ -3,6 +3,11 @@
 import { ScoredTeam } from "@/lib/types";
 import { PickRow } from "./PickRow";
 
+function formatPar(n: number): string {
+  if (n === 0) return "E";
+  return n > 0 ? `+${n}` : `${n}`;
+}
+
 interface Props {
   team: ScoredTeam;
   isOpen: boolean;
@@ -53,6 +58,12 @@ export function TeamRow({ team, isOpen, onToggle, expandable, hasFrozenPick }: P
               perusteella
             </p>
           )}
+          <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-xs">
+            <span className="text-zinc-400">Veikkaus voittajan tuloksesta</span>
+            <span className="font-mono font-semibold text-zinc-200 tabular-nums">
+              {formatPar(team.predictedWinnerScore)}
+            </span>
+          </div>
         </div>
       )}
     </div>
