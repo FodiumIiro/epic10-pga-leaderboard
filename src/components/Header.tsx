@@ -11,8 +11,9 @@ function formatRoundLabel(round: number | null, started: boolean): string {
 }
 
 function formatTime(raw: string): string {
-  // DataGolf's `last_update` is a US Pacific naive string, e.g. "2026-05-14 12:25 PM".
-  // JS Date() reads naive strings as UTC, dropping 7h (PDT = UTC-7). Hand-parse and treat as PT.
+  // DataGolf's `last_update` is a US Eastern naive string, e.g. "2026-05-14 12:25 PM".
+  // JS Date() reads naive strings as UTC, dropping the 4h ET-to-UTC offset (EDT = UTC-4).
+  // Hand-parse and treat as ET, then format in Helsinki.
   const m = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{1,2}):(\d{2})\s*(AM|PM)?$/i.exec(
     raw.trim()
   );
@@ -22,8 +23,8 @@ function formatTime(raw: string): string {
     let h = parseInt(hh, 10);
     if (ap?.toUpperCase() === "PM" && h !== 12) h += 12;
     if (ap?.toUpperCase() === "AM" && h === 12) h = 0;
-    // PDT (mid-March–early November) is UTC-7. Tournament runs May 14–17, 2026 → always PDT.
-    date = new Date(Date.UTC(+Y, +Mo - 1, +D, h + 7, +mm));
+    // EDT (mid-March–early November) is UTC-4. PGA Championship 2026 is in EDT.
+    date = new Date(Date.UTC(+Y, +Mo - 1, +D, h + 4, +mm));
   } else {
     date = new Date(raw);
   }
