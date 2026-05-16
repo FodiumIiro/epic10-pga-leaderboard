@@ -1,7 +1,7 @@
 import { kv } from "@vercel/kv";
 import { GroupPlayer } from "./types";
 
-const KEY = "cut-snapshot-pga-championship-2026";
+const KEY = "cut-snapshot-pga-championship-2026-v2";
 
 interface Snapshot {
   savedAt: string;
@@ -38,9 +38,7 @@ export async function maybeWriteSnapshot(
 
     const byCsvName: Record<string, number> = {};
     for (const p of groupPlayers) {
-      if (p.R1 != null && p.R2 != null) {
-        byCsvName[p.csvName] = p.R1 + p.R2;
-      } else if (p.currentScore != null) {
+      if (p.currentScore != null) {
         byCsvName[p.csvName] = p.currentScore;
       }
     }
