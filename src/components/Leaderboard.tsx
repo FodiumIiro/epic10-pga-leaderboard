@@ -75,7 +75,8 @@ export function Leaderboard({ initial }: Props) {
     const t = new Date(data.meta.lastUpdate).getTime();
     return Number.isFinite(t) ? t : 0;
   })();
-  const showStale = lastUpdateMs > 0 && now - lastUpdateMs > STALE_THRESHOLD_MS;
+  const showStale =
+    !data.meta.finalized && lastUpdateMs > 0 && now - lastUpdateMs > STALE_THRESHOLD_MS;
 
   const expandable = data.meta.started && data.teams.length > 0;
 
@@ -134,7 +135,9 @@ export function Leaderboard({ initial }: Props) {
       </div>
 
       <footer className="px-4 py-6 text-center text-[10px] text-zinc-600">
-        Pisteytys: 1 piste / oikealla sijalla oleva pelaaja, max 10 p.
+        {data.meta.finalized
+          ? "Lopullinen tulostaulu on jäädytetty turnauksen päättymisen jälkeen."
+          : "Pisteytys: 1 piste / oikealla sijalla oleva pelaaja, max 10 p."}
         <br />
         Tasapeli ratkaistaan ekstrakysymyksellä (voittajan tulos).
       </footer>

@@ -41,6 +41,18 @@ npm run dev
 npx tsx scripts/check-scoring.ts
 ```
 
+## Freezing the final leaderboard
+
+When the tournament is over, save the current `/api/scores` response to `data/final-scores.json` and deploy it. If that file exists, `/api/scores` returns it as the canonical final result instead of calling DataGolf. This keeps the final leaderboard visible even if the in-play feed later disappears or changes.
+
+```bash
+npm run freeze:final
+# or replace an existing snapshot after explicitly verifying the new final feed:
+npm run freeze:final -- --force
+```
+
+For the 2026 PGA Championship, `data/final-scores.json` is the manual final freeze requested after round 4.
+
 ## Deploy
 
 1. `gh repo create IiroFodium/epic10-pga-leaderboard --public --source=. --push`

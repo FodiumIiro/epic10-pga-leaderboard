@@ -6,6 +6,7 @@ import {
   maybeWriteSnapshot,
   readSnapshot,
 } from "@/lib/cutSnapshot";
+import { readFinalSnapshot } from "@/lib/finalSnapshot";
 import { computeGroupRanks, scoreTeam, sortTeams } from "@/lib/scoring";
 import { ApiResponse, ScoredTeam } from "@/lib/types";
 
@@ -13,6 +14,14 @@ export const runtime = "nodejs";
 export const revalidate = 60;
 
 export async function GET() {
+  const finalSnapshot = readFinalSnapshot();
+  if (finalSnapshot) {
+    return NextResponse.json(finalSnapshot, {
+      status: 200,
+      headers: { "Cache-Control": "s-maxage=3600, stale-while-revalidate=86400" },
+    });
+  }
+
   const teams = getTeams();
 
   let fetched;

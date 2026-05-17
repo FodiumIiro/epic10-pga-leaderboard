@@ -5,9 +5,10 @@ interface Props {
   showStale: boolean;
 }
 
-function formatRoundLabel(round: number | null, started: boolean): string {
-  if (!started || round == null) return "Ennen kierrosta";
-  return `Kierros ${round}`;
+function formatRoundLabel(meta: ApiMeta): string {
+  if (meta.finalized) return "Lopputulos";
+  if (!meta.started || meta.currentRound == null) return "Ennen kierrosta";
+  return `Kierros ${meta.currentRound}`;
 }
 
 function formatTime(raw: string): string {
@@ -48,7 +49,7 @@ export function Header({ meta, showStale }: Props) {
         </span>
       </div>
       <div className="mt-1 flex items-center justify-between text-xs text-zinc-400">
-        <span>{formatRoundLabel(meta.currentRound, meta.started)}</span>
+        <span>{formatRoundLabel(meta)}</span>
         <span className="flex items-center gap-1.5">
           {showStale && (
             <span
@@ -56,7 +57,7 @@ export function Header({ meta, showStale }: Props) {
               title="Yhteyttä ei ole päivitetty 5 minuuttiin"
             />
           )}
-          Päivitetty {formatTime(meta.lastUpdate)}
+          {meta.finalized ? "Jäädytetty" : "Päivitetty"} {formatTime(meta.lastUpdate)}
         </span>
       </div>
     </header>

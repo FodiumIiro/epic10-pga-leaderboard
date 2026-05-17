@@ -52,6 +52,9 @@ export interface ApiMeta {
   snapshotAvailable: boolean;
   leaderTotalScore: number | null;
   started: boolean;
+  finalized?: boolean;
+  frozenAt?: string;
+  freezeReason?: string;
   error?: string;
 }
 

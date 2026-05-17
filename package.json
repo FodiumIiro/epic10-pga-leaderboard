@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "freeze:final": "node scripts/freeze-final-scores.mjs"
   },
   "overrides": {
     "postcss": "8.5.14"
