@@ -48,17 +48,47 @@ export function TeamRow({ team, isOpen, onToggle, expandable, hasFrozenPick }: P
         )}
       </button>
       {isOpen && team.pickResults.length > 0 && (
-        <div className="px-4 pb-3 pt-1 bg-black/30">
-          {team.pickResults.map((pick) => (
-            <PickRow key={pick.pickPosition} pick={pick} />
-          ))}
+        <div className="px-2 pb-3 pt-1 bg-black/30">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[360px] table-fixed text-sm">
+              <colgroup>
+                <col className="w-[4.25rem]" />
+                <col />
+                <col className="w-[3.75rem]" />
+                <col className="w-[3.75rem]" />
+                <col className="w-[4rem]" />
+              </colgroup>
+              <thead className="text-[10px] uppercase tracking-wide text-zinc-500">
+                <tr>
+                  <th className="px-2 py-1.5 text-left font-medium" title="Joukkueen veikkaama sijoitus">
+                    Veikkaus
+                  </th>
+                  <th className="px-2 py-1.5 text-left font-medium">Pelaaja</th>
+                  <th className="px-2 py-1.5 text-right font-medium" title="Pelaajan nykyinen sijoitus Epic10-ryhmässä">
+                    Sija
+                  </th>
+                  <th className="px-2 py-1.5 text-right font-medium" title="Pelaajan tulos suhteessa pariin">
+                    Tulos
+                  </th>
+                  <th className="px-2 py-1.5 text-right font-medium" title="Erotus veikkauksen ja nykyisen sijan välillä">
+                    Erotus
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {team.pickResults.map((pick) => (
+                  <PickRow key={pick.pickPosition} pick={pick} />
+                ))}
+              </tbody>
+            </table>
+          </div>
           {hasFrozenPick && (
-            <p className="mt-2 text-[10px] text-zinc-500 italic">
+            <p className="mt-2 px-2 text-[10px] text-zinc-500 italic">
               * cut-pelaajan sijoitus on jäädytetty kierroksen 2 lopputuloksen
               perusteella
             </p>
           )}
-          <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-xs">
+          <div className="mx-2 mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-xs">
             <span className="text-zinc-400">Veikkaus voittajan tuloksesta</span>
             <span className="font-mono font-semibold text-zinc-200 tabular-nums">
               {formatPar(team.predictedWinnerScore)}

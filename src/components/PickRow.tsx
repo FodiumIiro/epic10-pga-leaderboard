@@ -34,38 +34,41 @@ function formatScore(player: PickResult["player"]): string {
 export function PickRow({ pick }: Props) {
   const { pickPosition, player, isCorrect, gap } = pick;
   const wasFrozen = player.isOut && !player.isMissing;
+  const rank = player.isMissing
+    ? "DNP"
+    : formatGroupRank(player.groupRankMin, player.groupRankMax);
+
   return (
-    <div className="grid grid-cols-[2rem_minmax(0,1fr)_2.75rem_3rem_2.75rem_2.25rem] items-center gap-2 py-2 text-sm">
-      <span className="text-zinc-500 font-mono">{pickPosition}.</span>
-      <span className="truncate text-zinc-100">
-        {shortLastName(pick.csvName)}
-        {player.isMissing && (
-          <span className="ml-1 text-[10px] text-zinc-500">(ei kentällä)</span>
-        )}
-        {wasFrozen && (
-          <span className="ml-1 text-[10px] text-zinc-500">*</span>
-        )}
-      </span>
-      <span className="font-mono text-zinc-300 text-xs">
-        {player.isMissing
-          ? "–"
-          : formatGroupRank(player.groupRankMin, player.groupRankMax)}
-      </span>
-      <span className="font-mono text-zinc-400 text-xs">
-        {player.isMissing
-          ? "DNP"
-          : player.isOut
-            ? player.dgPosition
-            : player.dgPosition || "–"}
-      </span>
-      <span className="font-mono text-zinc-300 text-xs">
+    <tr className="border-t border-white/5 text-sm">
+      <td className="px-2 py-2 font-mono text-xs text-zinc-500 tabular-nums">
+        {pickPosition}.
+      </td>
+      <td className="px-2 py-2 text-zinc-100">
+        <span className="block max-w-[9rem] truncate" title={pick.csvName}>
+          {shortLastName(pick.csvName)}
+          {player.isMissing && (
+            <span className="ml-1 text-[10px] text-zinc-500">(ei kentällä)</span>
+          )}
+          {wasFrozen && (
+            <span className="ml-1 text-[10px] text-zinc-500">*</span>
+          )}
+        </span>
+      </td>
+      <td
+        className="px-2 py-2 text-right font-mono text-xs text-zinc-300 tabular-nums"
+        title={player.isMissing ? "Ei mukana kentällä" : "Pelaajan sijoitus Epic10-ryhmässä"}
+      >
+        {rank}
+      </td>
+      <td className="px-2 py-2 text-right font-mono text-xs text-zinc-300 tabular-nums">
         {formatScore(player)}
-      </span>
-      <span
-        className={`font-mono text-right text-xs font-semibold ${gapColor(gap, isCorrect)}`}
+      </td>
+      <td
+        className={`px-2 py-2 text-right font-mono text-xs font-semibold tabular-nums ${gapColor(gap, isCorrect)}`}
+        title="Erotus veikatun sijan ja pelaajan nykyisen Epic10-sijan välillä"
       >
         {formatGap(gap, isCorrect)}
-      </span>
-    </div>
+      </td>
+    </tr>
   );
 }
